@@ -1,1 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Connecting to Spotify…</title>
+<style>
+  body{margin:0;background:#07090d;color:#e9eef4;font-family:'DM Sans',sans-serif;
+    display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:16px}
+  .dot{width:10px;height:10px;border-radius:50%;background:#1DB954;animation:pulse 1s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+  p{color:#52637a;font-size:16px}
+</style>
+</head>
+<body>
+<div class="dot"></div>
+<p>Connecting to Spotify…</p>
+<script>
+  // Spotify sends the token in the URL fragment after the redirect.
+  // Read it here and pass it back to the dashboard via localStorage,
+  // then redirect to the dashboard URL.
+  //
+  // IMPORTANT: Change DASHBOARD_URL below to wherever your dashboard is hosted.
+  // If using the local server:  http://localhost:8888
+  // If opening the file directly: file:///path/to/xeneon_dashboard.html
 
+  const DASHBOARD_URL = 'http://localhost:8888';
+
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+  const token = params.get('access_token');
+  const expiresIn = params.get('expires_in');
+
+  if(token){
+    // Store in localStorage so the dashboard can pick it up
+    localStorage.setItem('sp-token', token);
+    localStorage.setItem('sp-token-expiry', Date.now() + parseInt(expiresIn) * 1000);
+    // Redirect back to dashboard
+    window.location.href = DASHBOARD_URL;
+  } else {
+    document.querySelector('p').textContent = 'No token received. Please try again.';
+  }
+</script>
+</body>
+</html>
